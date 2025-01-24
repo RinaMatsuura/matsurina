@@ -2,6 +2,13 @@ import streamlit as st
 import os
 from dotenv import load_dotenv
 
+# 最初にページ設定を行う
+st.set_page_config(
+    page_title="ログイン",
+    page_icon="🔒",
+    initial_sidebar_state="collapsed"
+)
+
 # .envファイルを読み込む
 load_dotenv(override=True)
 
@@ -28,13 +35,6 @@ def check_password():
         else:
             st.session_state["password_correct"] = False
 
-    # ログイン前はサイドバーを非表示
-    st.set_page_config(
-        page_title="ログイン",
-        page_icon="🔒",
-        initial_sidebar_state="collapsed"
-    )
-    
     # CSSでサイドバーを完全に非表示
     st.markdown("""
         <style>
