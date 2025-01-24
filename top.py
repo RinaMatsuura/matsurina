@@ -4,9 +4,10 @@ from dotenv import load_dotenv
 
 # 最初にページ設定を行う
 st.set_page_config(
-    page_title="ログイン",
-    page_icon="🔒",
-    initial_sidebar_state="collapsed"
+    page_title="松浦のテストページ",
+    page_icon="🧊",
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
 # .envファイルを読み込む
@@ -35,17 +36,18 @@ def check_password():
         else:
             st.session_state["password_correct"] = False
 
-    # CSSでサイドバーを完全に非表示
-    st.markdown("""
-        <style>
-            [data-testid="collapsedControl"] {
-                display: none
-            }
-            section[data-testid="stSidebar"] {
-                display: none;
-            }
-        </style>
-        """, unsafe_allow_html=True)
+    # CSSでサイドバーを完全に非表示（ログイン前）
+    if "password_correct" not in st.session_state or not st.session_state["password_correct"]:
+        st.markdown("""
+            <style>
+                [data-testid="collapsedControl"] {
+                    display: none
+                }
+                section[data-testid="stSidebar"] {
+                    display: none;
+                }
+            </style>
+            """, unsafe_allow_html=True)
     
     # パスワードが未入力の場合、入力フォームを表示
     if "password_correct" not in st.session_state:
@@ -69,14 +71,6 @@ def check_password():
 
 # パスワードチェック
 if check_password():
-    # ログイン後のページ設定
-    st.set_page_config(
-        page_title="松浦のテストページ",
-        page_icon="🧊",
-        layout="wide",
-        initial_sidebar_state="expanded"
-    )
-
     # タイトルとヘッダー
     st.title("松浦のテストページ 🏠")
     st.header("こんにちは :sunglasses:", divider="rainbow")
