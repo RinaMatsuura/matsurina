@@ -5,16 +5,36 @@ def check_password():
     """パスワードチェックを行う"""
     def password_entered():
         """パスワードが正しいかチェック"""
-        if hmac.compare_digest(st.session_state["username"], "matsurina") and \
-           hmac.compare_digest(st.session_state["password"], "pagepass"):
+        if hmac.compare_digest(st.session_state["username"], "matsuri") and \
+           hmac.compare_digest(st.session_state["password"], "test123"):
             st.session_state["password_correct"] = True
             del st.session_state["password"]  # パスワードを削除
             del st.session_state["username"]  # ユーザー名を削除
         else:
             st.session_state["password_correct"] = False
 
+    # ログイン前はサイドバーを非表示
+    st.set_page_config(
+        page_title="ログイン",
+        page_icon="🔒",
+        initial_sidebar_state="collapsed"
+    )
+    
+    # CSSでサイドバーを完全に非表示
+    st.markdown("""
+        <style>
+            [data-testid="collapsedControl"] {
+                display: none
+            }
+            section[data-testid="stSidebar"] {
+                display: none;
+            }
+        </style>
+        """, unsafe_allow_html=True)
+    
     # パスワードが未入力の場合、入力フォームを表示
     if "password_correct" not in st.session_state:
+        st.title("🔒 ログイン")
         st.text_input("ユーザー名", key="username")
         st.text_input("パスワード", type="password", key="password")
         st.button("ログイン", on_click=password_entered)
@@ -22,6 +42,7 @@ def check_password():
     
     # パスワードが間違っている場合
     elif not st.session_state["password_correct"]:
+        st.title("🔒 ログイン")
         st.text_input("ユーザー名", key="username")
         st.text_input("パスワード", type="password", key="password")
         st.button("ログイン", on_click=password_entered)
@@ -33,16 +54,16 @@ def check_password():
 
 # パスワードチェック
 if check_password():
-    # ページの基本設定
+    # ログイン後のページ設定
     st.set_page_config(
-        page_title="松浦の実験ページ🧬",
+        page_title="松浦のテストページ",
         page_icon="🧊",
         layout="wide",
-        initial_sidebar_state="expanded"  # サイドバーを最初から開いておく
+        initial_sidebar_state="expanded"
     )
 
     # タイトルとヘッダー
-    st.title("🧬松浦の実験ページ🧬")
+    st.title("松浦のテストページ 🏠")
     st.header("こんにちは :sunglasses:", divider="rainbow")
 
     # メインコンテンツ
