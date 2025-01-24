@@ -10,6 +10,10 @@ def check_password():
         correct_username = os.environ.get('STREAMLIT_USERNAME', 'default_user')
         correct_password = os.environ.get('STREAMLIT_PASSWORD', 'default_pass')
         
+        # デバッグ用の出力（確認後は削除してください）
+        st.write(f"Expected username: {correct_username}")
+        st.write(f"Entered username: {st.session_state['username']}")
+        
         # 文字列をバイト列に変換して比較
         if hmac.compare_digest(str(st.session_state["username"]).encode(), correct_username.encode()) and \
            hmac.compare_digest(str(st.session_state["password"]).encode(), correct_password.encode()):
