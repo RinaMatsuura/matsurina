@@ -1,15 +1,24 @@
 import streamlit as st
 import hmac
+import os
+from dotenv import load_dotenv
+
+# .envファイルから環境変数を読み込む
+load_dotenv()
 
 def check_password():
     """パスワードチェックを行う"""
     def password_entered():
         """パスワードが正しいかチェック"""
-        if hmac.compare_digest(st.session_state["username"], "matsuri") and \
-           hmac.compare_digest(st.session_state["password"], "test123"):
+        # 環境変数から認証情報を取得
+        correct_username = os.getenv('STREAMLIT_USERNAME')
+        correct_password = os.getenv('STREAMLIT_PASSWORD')
+        
+        if hmac.compare_digest(st.session_state["username"], correct_username) and \
+           hmac.compare_digest(st.session_state["password"], correct_password):
             st.session_state["password_correct"] = True
-            del st.session_state["password"]  # パスワードを削除
-            del st.session_state["username"]  # ユーザー名を削除
+            del st.session_state["password"]
+            del st.session_state["username"]
         else:
             st.session_state["password_correct"] = False
 
