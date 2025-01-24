@@ -7,7 +7,7 @@ import pandas as pd
 st.header("@cosmeスクレイピング 🔍", divider="orange")
 
 # 商品ID入力フォーム
-default_id = "10212664"
+default_id = "10205860"
 product_id = st.text_input(
     "@cosmeの商品IDを入力してください。分からない場合は「💡 商品IDってどこに書いてあるの？」をクリックしてください。",
     value=default_id,
