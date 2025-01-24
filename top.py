@@ -21,12 +21,6 @@ def check_password():
         correct_username = os.environ.get('STREAMLIT_USERNAME')
         correct_password = os.environ.get('STREAMLIT_PASSWORD')
         
-        # デバッグ用の出力
-        st.write(f"Expected username: {correct_username}")
-        st.write(f"Expected password: {correct_password}")
-        st.write(f"Entered username: {st.session_state['username']}")
-        st.write(f"Entered password: {st.session_state['password']}")
-        
         # シンプルな文字列比較
         if (st.session_state["username"] == correct_username and 
             st.session_state["password"] == correct_password):
