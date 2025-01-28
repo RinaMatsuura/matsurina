@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 # 最初にページ設定を行う
 st.set_page_config(
-    page_title="松浦のテストページ",
+    page_title="松浦が実験のために色々できるページ",
     page_icon="🧊",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -66,7 +66,7 @@ def check_password():
 # パスワードチェック
 if check_password():
     # タイトルとヘッダー
-    st.title("松浦のテストページ 🏠")
+    st.title("色々できるページ🏠")
     st.header("こんにちは :sunglasses:", divider="rainbow")
 
     # メインコンテンツ
@@ -75,7 +75,7 @@ if check_password():
               - 社内利用だけを想定して色々作っているので他社に配布しないでください。""")
 
     # 機能の説明
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3,col4 = st.columns(3)
 
     with col1:
         st.subheader("🔒 ハッシュ化")
@@ -96,7 +96,7 @@ if check_password():
         """)
         if st.button("@cosmeスクレイピングページへ", type="primary", use_container_width=True):
             st.switch_page("pages/2_atcosme.py")
-
+    
     with col3:
         st.subheader("📊 テキストマイニング")
         st.write("""
@@ -104,8 +104,18 @@ if check_password():
         - 分析したい品詞を選択
         - 分析結果をダウンロードできる！
         """)
+        if st.button("Qoo10スクレイピングページへ", type="primary", use_container_width=True):
+            st.switch_page("pages/3_qoo10.py")
+
+    with col4:
+        st.subheader("📊 テキストマイニング")
+        st.write("""
+        - 分析したいテキストをアップロード
+        - 分析したい品詞を選択
+        - 分析結果をダウンロードできる！
+        """)
         if st.button("テキストマイニングページへ", type="primary", use_container_width=True):
-            st.switch_page("pages/3_textmining.py")
+            st.switch_page("pages/4_textmining.py")
 
     # フッター
     st.sidebar.markdown("---")
