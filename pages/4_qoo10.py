@@ -4,13 +4,17 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import time
 
-def get_reviews(base_url):
-    """Qoo10の全ページのレビューを取得する関数"""
+def get_reviews(base_url, max_pages=None):
+    """Qoo10の全ページまたは指定ページ数までのレビューを取得する関数"""
     all_reviews = []
     page = 1
     
     try:
         while True:
+            # 指定ページ数に達したら終了
+            if max_pages and page > max_pages:
+                break
+                
             # ヘッダーを設定してブロックを回避
             headers = {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
@@ -57,9 +61,20 @@ def main():
     # URLの入力
     url = st.text_input("Qoo10の商品URLを入力してください", "https://www.qoo10.jp/g/1018510911/")
     
+    # ページ数の選択
+    page_option = st.radio(
+        "取得するページ数を選択してください",
+        ["全ページ", "指定ページ数まで"],
+        horizontal=True
+    )
+    
+    max_pages = None
+    if page_option == "指定ページ数まで":
+        max_pages = st.number_input("取得するページ数", min_value=1, value=5, step=1)
+    
     if st.button("レビューを取得"):
         with st.spinner("レビューを取得中..."):
-            reviews = get_reviews(url)
+            reviews = get_reviews(url, max_pages)
             
             if reviews:
                 # レビュー数を表示
