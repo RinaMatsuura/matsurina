@@ -13,7 +13,18 @@ from io import BytesIO
 
 def get_font_path():
     """利用可能なフォントパスを取得"""
-    # Notoフォントを優先的に使用（Streamlit Cloudで利用可能）
+    # IPAフォントを優先的に使用（日本語対応）
+    ipa_paths = [
+        "/usr/share/fonts/opentype/ipafont-gothic/ipag.ttf",
+        "/usr/share/fonts/truetype/ipafont/ipag.ttf",
+        "/usr/share/fonts/truetype/ipafont-gothic/ipag.ttf"
+    ]
+    
+    for path in ipa_paths:
+        if os.path.exists(path):
+            return path
+    
+    # Notoフォントを試す
     noto_paths = [
         "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
         "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
@@ -24,32 +35,21 @@ def get_font_path():
         if os.path.exists(path):
             return path
     
-    # IPAフォントを試す
-    ipa_paths = [
-        "/usr/share/fonts/opentype/ipafont-gothic/ipag.ttf",
-        "/usr/share/fonts/truetype/ipafont/ipag.ttf"
-    ]
-    
-    for path in ipa_paths:
-        if os.path.exists(path):
-            return path
-    
     # システムにインストールされているフォントを探す
     fonts = fm.findSystemFonts()
     
     # 日本語フォントを優先的に探す
     for font in fonts:
         try:
-            if any(name in font.lower() for name in ['noto', 'ipa', 'gothic', 'mincho', 'meiryo']):
+            if any(name in font.lower() for name in ['ipa', 'noto', 'gothic', 'mincho']):
                 return font
         except:
             continue
     
-    # 最後の手段としてsans-serifを使用
-    return 'sans-serif'
+    return None
 
 # フォントの設定
-plt.rcParams['font.family'] = ['sans-serif']
+plt.rcParams['font.family'] = ['IPAGothic', 'Noto Sans CJK JP']
 plt.rcParams['font.sans-serif'] = ['Noto Sans CJK JP', 'IPAGothic', 'Hiragino Sans']
 
 # MeCabの初期化をシンプルに
