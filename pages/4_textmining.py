@@ -5,6 +5,7 @@ from collections import Counter
 import re
 from wordcloud import WordCloud
 import MeCab
+from io import BytesIO
 
 st.header("テキスト分析 📊", divider="rainbow")
 
@@ -73,9 +74,9 @@ if uploaded_file is not None:
                         width=800,
                         height=600,
                         regexp=r"[\w']+",
-                        collocations=False,  # 単語の重複を許可しない
-                        min_font_size=10,    # 最小フォントサイズ
-                        max_words=100        # 最大単語数
+                        collocations=False,
+                        min_font_size=10,
+                        max_words=100
                     ).generate(txt)
                     
                     # プロットの作成
@@ -93,15 +94,19 @@ if uploaded_file is not None:
                     freq_df = pd.DataFrame(word_freq, columns=['単語', '出現回数'])
                     st.dataframe(freq_df, use_container_width=True)
                     
-                    # 画像のダウンロード
-                    plt.savefig('wordcloud.png', bbox_inches='tight', pad_inches=0)
-                    with open('wordcloud.png', 'rb') as file:
-                        btn = st.download_button(
-                            label="📥 ワードクラウド画像をダウンロード",
-                            data=file,
-                            file_name="wordcloud.png",
-                            mime="image/png"
-                        )
+                    # メモリ上でバイナリデータとして画像を保存
+                    buf = BytesIO()
+                    plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0)
+                    buf.seek(0)
+                    
+                    # ダウンロードボタン
+                    btn = st.download_button(
+                        label="📥 ワードクラウド画像をダウンロード",
+                        data=buf,
+                        file_name="wordcloud.png",
+                        mime="image/png"
+                    )
+
                 except Exception as e:
                     st.error(f"ワードクラウドの生成中にエラーが発生しました: {str(e)}")
                     # 代替フォントを試す
@@ -120,6 +125,20 @@ if uploaded_file is not None:
                         ax.imshow(wordcloud, interpolation='bilinear')
                         ax.axis('off')
                         st.pyplot(fig)
+                        
+                        # メモリ上でバイナリデータとして画像を保存
+                        buf = BytesIO()
+                        plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0)
+                        buf.seek(0)
+                        
+                        # ダウンロードボタン
+                        btn = st.download_button(
+                            label="📥 ワードクラウド画像をダウンロード",
+                            data=buf,
+                            file_name="wordcloud.png",
+                            mime="image/png"
+                        )
+                        
                     except Exception as e:
                         st.error(f"代替フォントでも失敗しました: {str(e)}")
                 
