@@ -5,10 +5,6 @@ from collections import Counter
 import re
 from wordcloud import WordCloud
 import MeCab
-from io import BytesIO
-
-# MeCabの初期化（シンプルな設定）
-tagger = MeCab.Tagger('')  # デフォルト設定を使用
 
 st.header("テキスト分析 📊", divider="rainbow")
 
@@ -36,47 +32,30 @@ if uploaded_file is not None:
             "分析するカラムを選択してください",
             df.columns.tolist()
         )
-        
+
         # 品詞選択
-        pos_options = ["名詞", "動詞", "形容詞", "副詞"]
+        pos_options = ["名詞", "動詞", "形容詞"]
         selected_pos = st.multiselect(
-            "抽出する品詞を選択してください",
+            "分析する品詞を選択してください（複数選択可）",
             pos_options,
             default=["名詞"]
         )
-        
-        # テキストデータの前処理
-        def process_text(text):
-            # MeCabの初期化（インストールした辞書のパスを指定）
-            mecab = MeCab.Tagger(f'-d /Users/rinam/mecab-dict')
-            
-            # 単語と品詞の抽出
-            words = []
-            node = mecab.parseToNode(str(text))
-            
-            while node:
-                # 品詞を取得
-                pos = node.feature.split(',')[0]
-                
-                # 選択された品詞のみを抽出
-                if pos in selected_pos:
-                    word = node.surface
-                    # 空でなく、1文字以上の単語を追加
-                    if word and len(word) > 1:
-                        words.append(word)
-                node = node.next
-                
-            return words
-        
-        # 全テキストを結合して前処理
+
+        # テキストを結合
+        txt = " ".join(df[text_column].astype(str))
+
+        # MeCabで形態素解析
+        tagger = MeCab.Tagger('')
+        node = tagger.parseToNode(txt)
+
+        # 選択された品詞の単語を抽出
         all_words = []
-        for text in df[text_column]:
-            if pd.notna(text):
-                all_words.extend(process_text(text))
-        
-        # テキストを空白区切りの文字列に変換
-        txt = ' '.join(all_words)
-        
+        while node:
+            pos = node.feature.split(",")[0]
+            if pos in selected_pos:
+                all_words.append(node.surface)
+            node = node.next
+
         # ワードクラウド生成ボタン
         if st.button("🎨 ワードクラウドを生成"):
             with st.spinner("ワードクラウドを生成中..."):
@@ -108,18 +87,17 @@ if uploaded_file is not None:
                     freq_df = pd.DataFrame(word_freq, columns=['単語', '出現回数'])
                     st.dataframe(freq_df, use_container_width=True)
                     
-                    # メモリ上でバイナリデータとして画像を保存
-                    buf = BytesIO()
-                    plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0)
-                    buf.seek(0)
+                    # 画像を保存
+                    plt.savefig('wordcloud.png', bbox_inches='tight', pad_inches=0)
                     
                     # ダウンロードボタン
-                    btn = st.download_button(
-                        label="📥 ワードクラウド画像をダウンロード",
-                        data=buf,
-                        file_name="wordcloud.png",
-                        mime="image/png"
-                    )
+                    with open('wordcloud.png', 'rb') as file:
+                        btn = st.download_button(
+                            label="📥 ワードクラウド画像をダウンロード",
+                            data=file,
+                            file_name="wordcloud.png",
+                            mime="image/png"
+                        )
 
                 except Exception as e:
                     st.error(f"ワードクラウドの生成中にエラーが発生しました: {str(e)}")
@@ -140,22 +118,21 @@ if uploaded_file is not None:
                         ax.axis('off')
                         st.pyplot(fig)
                         
-                        # メモリ上でバイナリデータとして画像を保存
-                        buf = BytesIO()
-                        plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0)
-                        buf.seek(0)
+                        # 画像を保存
+                        plt.savefig('wordcloud.png', bbox_inches='tight', pad_inches=0)
                         
                         # ダウンロードボタン
-                        btn = st.download_button(
-                            label="📥 ワードクラウド画像をダウンロード",
-                            data=buf,
-                            file_name="wordcloud.png",
-                            mime="image/png"
-                        )
-                        
+                        with open('wordcloud.png', 'rb') as file:
+                            btn = st.download_button(
+                                label="📥 ワードクラウド画像をダウンロード",
+                                data=file,
+                                file_name="wordcloud.png",
+                                mime="image/png"
+                            )
+                            
                     except Exception as e:
                         st.error(f"代替フォントでも失敗しました: {str(e)}")
-                
+
     except Exception as e:
         st.error(f"エラーが発生しました: {str(e)}")
 
