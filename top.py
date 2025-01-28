@@ -75,7 +75,7 @@ if check_password():
               - 社内利用だけを想定して色々作っているので他社に配布しないでください。""")
 
     # 機能の説明
-    col1, col2, col3,col4 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
 
     with col1:
         st.subheader("🔒 ハッシュ化")
@@ -98,11 +98,11 @@ if check_password():
             st.switch_page("pages/2_atcosme.py")
     
     with col3:
-        st.subheader("📊 テキストマイニング")
+        st.subheader("🛒 Qoo10スクレイピング")
         st.write("""
-        - 分析したいテキストをアップロード
-        - 分析したい品詞を選択
-        - 分析結果をダウンロードできる！
+        - Qoo10からレビューを取得！
+        - 評価も取得できる
+        - csvでデータも取得できる
         """)
         if st.button("Qoo10スクレイピングページへ", type="primary", use_container_width=True):
             st.switch_page("pages/3_qoo10.py")
