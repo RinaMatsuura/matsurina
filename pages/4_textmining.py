@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import matplotlib.font_manager as fm
 from io import BytesIO
+import japanize_matplotlib
 
 def get_font_path():
     """利用可能なフォントパスを取得"""
@@ -130,10 +131,14 @@ if uploaded_file is not None:
                         collocations=False,
                         min_font_size=10,
                         max_words=100,
-                        prefer_horizontal=0.7  # 横書きの比率を調整
+                        prefer_horizontal=0.7,  # 横書きの比率を調整
+                        font_step=1,  # フォントサイズの調整ステップを小さくする
+                        normalize_plurals=False,  # 複数形の正規化を無効化
+                        repeat=True  # 単語の繰り返しを許可
                     ).generate(" ".join(all_words))  # 単語リストを直接使用
                     
                     # プロットの作成
+                    plt.rcParams['font.family'] = 'IPAexGothic'  # プロット全体のフォント設定
                     fig, ax = plt.subplots(figsize=(10, 8))
                     ax.imshow(wordcloud, interpolation='bilinear')
                     ax.axis('off')
@@ -149,7 +154,7 @@ if uploaded_file is not None:
                     
                     # メモリ上でバイナリデータとして画像を保存
                     buf = BytesIO()
-                    plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0)
+                    plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0, dpi=300)  # DPIを上げる
                     buf.seek(0)
                     
                     # ダウンロードボタン
