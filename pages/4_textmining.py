@@ -7,9 +7,8 @@ from wordcloud import WordCloud
 import MeCab
 from io import BytesIO
 
-# MeCabの初期化（unidic-liteを使用）
-tagger = MeCab.Tagger('-d /usr/local/lib/mecab/dic/mecab-ipadic-neologd')  # または
-# tagger = MeCab.Tagger()  # システムデフォルトの辞書を使用
+# MeCabの初期化（シンプルな設定）
+tagger = MeCab.Tagger('')  # デフォルト設定を使用
 
 st.header("テキスト分析 📊", divider="rainbow")
 
@@ -25,11 +24,11 @@ if uploaded_file is not None:
         except UnicodeDecodeError:
             try:
                 # 次にUTF-8で試す
-                uploaded_file.seek(0)  # ファイルポインタを先頭に戻す
+                uploaded_file.seek(0)
                 df = pd.read_csv(uploaded_file, encoding='utf-8')
             except UnicodeDecodeError:
                 # 最後にCP932で試す
-                uploaded_file.seek(0)  # ファイルポインタを先頭に戻す
+                uploaded_file.seek(0)
                 df = pd.read_csv(uploaded_file, encoding='cp932')
         
         # カラム選択
