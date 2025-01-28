@@ -45,11 +45,12 @@ def get_font_path():
         except:
             continue
     
-    # 最後の手段としてDejaVuを使用
-    return "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+    # 最後の手段としてsans-serifを使用
+    return 'sans-serif'
 
 # フォントの設定
-plt.rcParams['font.family'] = ['Noto Sans CJK JP', 'IPAGothic', 'DejaVu Sans']
+plt.rcParams['font.family'] = ['sans-serif']
+plt.rcParams['font.sans-serif'] = ['Noto Sans CJK JP', 'IPAGothic', 'Hiragino Sans']
 
 # MeCabの初期化をシンプルに
 tagger = MeCab.Tagger()
