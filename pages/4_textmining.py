@@ -9,22 +9,28 @@ import tempfile
 import os
 from pathlib import Path
 import matplotlib.font_manager as fm
+from io import BytesIO
 
 def get_font_path():
     """利用可能なフォントパスを取得"""
+    # DejaVuフォントを優先的に使用
+    dejavu_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+    if os.path.exists(dejavu_path):
+        return dejavu_path
+    
     # システムにインストールされているフォントを探す
     fonts = fm.findSystemFonts()
     
     # 日本語フォントを優先的に探す
     for font in fonts:
         try:
-            if any(name in font.lower() for name in ['gothic', 'mincho', 'noto', 'meiryo', 'hiragino']):
+            if any(name in font.lower() for name in ['dejavu', 'gothic', 'mincho', 'noto', 'meiryo']):
                 return font
         except:
             continue
     
-    # デフォルトのフォントを返す
-    return fm.findfont(fm.FontProperties(family='sans-serif'))
+    # DejaVuSans-Boldを最後の手段として使用
+    return "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 
 # MeCabの初期化をシンプルに
 tagger = MeCab.Tagger()
@@ -127,21 +133,18 @@ if uploaded_file is not None:
                     freq_df = pd.DataFrame(word_freq, columns=['単語', '出現回数'])
                     st.dataframe(freq_df, use_container_width=True)
                     
-                    # 一時ディレクトリに画像を保存
-                    with tempfile.NamedTemporaryFile(delete=False, suffix='.png') as tmp_file:
-                        plt.savefig(tmp_file.name, bbox_inches='tight', pad_inches=0)
-                        
-                        # ダウンロードボタン
-                        with open(tmp_file.name, 'rb') as file:
-                            btn = st.download_button(
-                                label="📥 ワードクラウド画像をダウンロード",
-                                data=file,
-                                file_name="wordcloud.png",
-                                mime="image/png"
-                            )
-                        
-                        # 一時ファイルを削除
-                        os.unlink(tmp_file.name)
+                    # メモリ上でバイナリデータとして画像を保存
+                    buf = BytesIO()
+                    plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0)
+                    buf.seek(0)
+                    
+                    # ダウンロードボタン
+                    btn = st.download_button(
+                        label="📥 ワードクラウド画像をダウンロード",
+                        data=buf,
+                        file_name="wordcloud.png",
+                        mime="image/png"
+                    )
 
                 except Exception as e:
                     st.error(f"ワードクラウドの生成中にエラーが発生しました: {str(e)}")
