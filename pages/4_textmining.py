@@ -10,7 +10,6 @@ import os
 from pathlib import Path
 import matplotlib.font_manager as fm
 from io import BytesIO
-import japanize_matplotlib
 
 def get_font_path():
     """利用可能なフォントパスを取得"""
@@ -48,6 +47,9 @@ def get_font_path():
     
     # 最後の手段としてDejaVuを使用
     return "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+
+# フォントの設定
+plt.rcParams['font.family'] = ['Noto Sans CJK JP', 'IPAGothic', 'DejaVu Sans']
 
 # MeCabの初期化をシンプルに
 tagger = MeCab.Tagger()
@@ -138,7 +140,6 @@ if uploaded_file is not None:
                     ).generate(" ".join(all_words))  # 単語リストを直接使用
                     
                     # プロットの作成
-                    plt.rcParams['font.family'] = 'IPAexGothic'  # プロット全体のフォント設定
                     fig, ax = plt.subplots(figsize=(10, 8))
                     ax.imshow(wordcloud, interpolation='bilinear')
                     ax.axis('off')
