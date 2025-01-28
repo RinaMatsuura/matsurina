@@ -5,6 +5,26 @@ from collections import Counter
 import re
 from wordcloud import WordCloud
 import MeCab
+import tempfile
+import os
+from pathlib import Path
+import matplotlib.font_manager as fm
+
+def get_font_path():
+    """利用可能なフォントパスを取得"""
+    # システムにインストールされているフォントを探す
+    fonts = fm.findSystemFonts()
+    
+    # 日本語フォントを優先的に探す
+    for font in fonts:
+        try:
+            if any(name in font.lower() for name in ['gothic', 'mincho', 'noto', 'meiryo', 'hiragino']):
+                return font
+        except:
+            continue
+    
+    # デフォルトのフォントを返す
+    return fm.findfont(fm.FontProperties(family='sans-serif'))
 
 # MeCabの初期化をシンプルに
 tagger = MeCab.Tagger()
@@ -77,16 +97,20 @@ if uploaded_file is not None:
         if st.button("🎨 ワードクラウドを生成"):
             with st.spinner("ワードクラウドを生成中..."):
                 try:
+                    # フォントパスの取得
+                    font_path = get_font_path()
+                    st.write(f"使用フォント: {font_path}")  # デバッグ用
+                    
                     # ワードクラウドの生成
                     wordcloud = WordCloud(
                         background_color="white",
-                        font_path="/System/Library/Fonts/ヒラギノ角ゴシック W6.ttc",
+                        font_path=font_path,
                         width=800,
                         height=600,
                         regexp=r"[\w']+",
-                        collocations=False,  # 単語の重複を許可しない
-                        min_font_size=10,    # 最小フォントサイズ
-                        max_words=100        # 最大単語数
+                        collocations=False,
+                        min_font_size=10,
+                        max_words=100
                     ).generate(txt)
                     
                     # プロットの作成
@@ -99,40 +123,37 @@ if uploaded_file is not None:
                     
                     # 頻出単語の表示
                     word_freq = Counter(all_words).most_common(20)
-                    
                     st.subheader("頻出単語TOP20（表）")
                     freq_df = pd.DataFrame(word_freq, columns=['単語', '出現回数'])
                     st.dataframe(freq_df, use_container_width=True)
                     
-                    # 画像のダウンロード
-                    plt.savefig('wordcloud.png', bbox_inches='tight', pad_inches=0)
-                    with open('wordcloud.png', 'rb') as file:
-                        btn = st.download_button(
-                            label="📥 ワードクラウド画像をダウンロード",
-                            data=file,
-                            file_name="wordcloud.png",
-                            mime="image/png"
-                        )
+                    # 一時ディレクトリに画像を保存
+                    with tempfile.NamedTemporaryFile(delete=False, suffix='.png') as tmp_file:
+                        plt.savefig(tmp_file.name, bbox_inches='tight', pad_inches=0)
+                        
+                        # ダウンロードボタン
+                        with open(tmp_file.name, 'rb') as file:
+                            btn = st.download_button(
+                                label="📥 ワードクラウド画像をダウンロード",
+                                data=file,
+                                file_name="wordcloud.png",
+                                mime="image/png"
+                            )
+                        
+                        # 一時ファイルを削除
+                        os.unlink(tmp_file.name)
+
                 except Exception as e:
                     st.error(f"ワードクラウドの生成中にエラーが発生しました: {str(e)}")
-                    # 代替フォントを試す
+                    st.error("フォントパスを確認中...")
+                    
                     try:
-                        wordcloud = WordCloud(
-                            background_color="white",
-                            font_path="/System/Library/Fonts/AppleGothic.ttf",
-                            width=800,
-                            height=600,
-                            regexp=r"[\w']+",
-                            collocations=False,
-                            min_font_size=10,
-                            max_words=100
-                        ).generate(txt)
-                        fig, ax = plt.subplots(figsize=(10, 8))
-                        ax.imshow(wordcloud, interpolation='bilinear')
-                        ax.axis('off')
-                        st.pyplot(fig)
+                        # システムフォントの一覧を表示（デバッグ用）
+                        available_fonts = [f for f in fm.findSystemFonts()]
+                        st.write("利用可能なフォント:", available_fonts[:5])  # 最初の5つだけ表示
+                        
                     except Exception as e:
-                        st.error(f"代替フォントでも失敗しました: {str(e)}")
+                        st.error(f"フォント情報の取得に失敗: {str(e)}")
                 
     except Exception as e:
         st.error(f"エラーが発生しました: {str(e)}")
