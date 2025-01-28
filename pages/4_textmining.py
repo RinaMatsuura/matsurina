@@ -5,16 +5,9 @@ from collections import Counter
 import re
 from wordcloud import WordCloud
 import MeCab
-import unidic_lite
 
-# MeCabの初期化を修正
-try:
-    # unidic-liteの辞書パスを取得
-    dicdir = unidic_lite.DICDIR
-    tagger = MeCab.Tagger(f'-d {dicdir}')
-except Exception as e:
-    # エラーが発生した場合はデフォルト設定を使用
-    tagger = MeCab.Tagger('')
+# MeCabの初期化をシンプルに
+tagger = MeCab.Tagger()  # 引数なしで初期化
 
 st.header("テキスト分析 📊", divider="rainbow")
 
@@ -42,12 +35,9 @@ if uploaded_file is not None:
         
         # テキストデータの前処理
         def process_text(text):
-            # MeCabの初期化（インストールした辞書のパスを指定）
-            mecab = MeCab.Tagger(f'-d /Users/rinam/mecab-dict')
-            
             # 単語と品詞の抽出
             words = []
-            node = mecab.parseToNode(str(text))
+            node = tagger.parseToNode(str(text))
             
             while node:
                 # 品詞を取得
