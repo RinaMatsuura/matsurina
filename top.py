@@ -75,7 +75,7 @@ if check_password():
               - 社内利用だけを想定して色々作っているので他社に配布しないでください。""")
 
     # 機能の説明
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2 = st.columns(2)
 
     with col1:
         st.subheader("🔒 ハッシュ化")
@@ -87,17 +87,6 @@ if check_password():
         if st.button("ハッシュ化ページへ", type="primary", use_container_width=True):
             st.switch_page("pages/1_hashpage.py")
 
-    with col2:
-        st.subheader(":memo: @cosmeスクレイピング")
-        st.write("""
-        - @cosmeからレビューを取得！
-        - 評価も取得できる
-        - csvでデータも取得できる
-        """)
-        if st.button("@cosmeスクレイピングページへ", type="primary", use_container_width=True):
-            st.switch_page("pages/2_atcosme.py")
-    
-    with col3:
         st.subheader("🛒 Qoo10スクレイピング")
         st.write("""
         - Qoo10からレビューを取得！
@@ -107,7 +96,16 @@ if check_password():
         if st.button("Qoo10スクレイピングページへ", type="primary", use_container_width=True):
             st.switch_page("pages/3_qoo10.py")
 
-    with col4:
+    with col2:
+        st.subheader(":memo: @cosmeスクレイピング")
+        st.write("""
+        - @cosmeからレビューを取得！
+        - 評価も取得できる
+        - csvでデータも取得できる
+        """)
+        if st.button("@cosmeスクレイピングページへ", type="primary", use_container_width=True):
+            st.switch_page("pages/2_atcosme.py")
+
         st.subheader("📊 テキストマイニング")
         st.write("""
         - 分析したいテキストをアップロード
