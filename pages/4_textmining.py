@@ -78,7 +78,7 @@ if uploaded_file is not None:
         
         # カラム選択
         text_column = st.selectbox(
-            "分析するカラムを選択してください",
+            "分析するカラムを選択してください※テキストのあるカラムにしてください",
             df.columns.tolist()
         )
         
