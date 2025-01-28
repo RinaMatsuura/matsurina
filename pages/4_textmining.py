@@ -7,7 +7,7 @@ from wordcloud import WordCloud
 import MeCab
 
 # MeCabの初期化をシンプルに
-tagger = MeCab.Tagger()  # 引数なしで初期化
+tagger = MeCab.Tagger()
 
 st.header("テキスト分析 📊", divider="rainbow")
 
@@ -16,8 +16,19 @@ uploaded_file = st.file_uploader("CSVファイルをアップロードしてく�
 
 if uploaded_file is not None:
     try:
-        # CSVファイルを読み込む
-        df = pd.read_csv(uploaded_file, encoding='shift-jis')
+        # CSVファイルを読み込む（複数のエンコーディングを試す）
+        try:
+            # まずUTF-8で試す
+            df = pd.read_csv(uploaded_file, encoding='utf-8')
+        except UnicodeDecodeError:
+            try:
+                # 次にShift-JISで試す
+                uploaded_file.seek(0)  # ファイルポインタを先頭に戻す
+                df = pd.read_csv(uploaded_file, encoding='shift-jis')
+            except UnicodeDecodeError:
+                # 最後にCP932で試す
+                uploaded_file.seek(0)  # ファイルポインタを先頭に戻す
+                df = pd.read_csv(uploaded_file, encoding='cp932')
         
         # カラム選択
         text_column = st.selectbox(
