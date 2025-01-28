@@ -7,6 +7,10 @@ from wordcloud import WordCloud
 import MeCab
 from io import BytesIO
 
+# MeCabの初期化（unidic-liteを使用）
+tagger = MeCab.Tagger('-d /usr/local/lib/mecab/dic/mecab-ipadic-neologd')  # または
+# tagger = MeCab.Tagger()  # システムデフォルトの辞書を使用
+
 st.header("テキスト分析 📊", divider="rainbow")
 
 # ファイルアップロード
