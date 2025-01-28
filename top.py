@@ -90,7 +90,7 @@ if check_password():
         st.subheader("🛒 Qoo10スクレイピング")
         st.write("""
         - Qoo10からレビューを取得！
-        - 評価も取得できる
+        - アットコスメより取得スピードが早いよ
         - csvでデータも取得できる
         """)
         if st.button("Qoo10スクレイピングページへ", type="primary", use_container_width=True):
