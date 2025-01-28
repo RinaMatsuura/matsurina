@@ -13,10 +13,26 @@ from io import BytesIO
 
 def get_font_path():
     """利用可能なフォントパスを取得"""
-    # DejaVuフォントを優先的に使用
-    dejavu_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
-    if os.path.exists(dejavu_path):
-        return dejavu_path
+    # Notoフォントを優先的に使用（Streamlit Cloudで利用可能）
+    noto_paths = [
+        "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc"
+    ]
+    
+    for path in noto_paths:
+        if os.path.exists(path):
+            return path
+    
+    # IPAフォントを試す
+    ipa_paths = [
+        "/usr/share/fonts/opentype/ipafont-gothic/ipag.ttf",
+        "/usr/share/fonts/truetype/ipafont/ipag.ttf"
+    ]
+    
+    for path in ipa_paths:
+        if os.path.exists(path):
+            return path
     
     # システムにインストールされているフォントを探す
     fonts = fm.findSystemFonts()
@@ -24,13 +40,13 @@ def get_font_path():
     # 日本語フォントを優先的に探す
     for font in fonts:
         try:
-            if any(name in font.lower() for name in ['dejavu', 'gothic', 'mincho', 'noto', 'meiryo']):
+            if any(name in font.lower() for name in ['noto', 'ipa', 'gothic', 'mincho', 'meiryo']):
                 return font
         except:
             continue
     
-    # DejaVuSans-Boldを最後の手段として使用
-    return "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+    # 最後の手段としてDejaVuを使用
+    return "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
 
 # MeCabの初期化をシンプルに
 tagger = MeCab.Tagger()
@@ -96,9 +112,6 @@ if uploaded_file is not None:
             if pd.notna(text):
                 all_words.extend(process_text(text))
         
-        # テキストを空白区切りの文字列に変換
-        txt = ' '.join(all_words)
-        
         # ワードクラウド生成ボタン
         if st.button("🎨 ワードクラウドを生成"):
             with st.spinner("ワードクラウドを生成中..."):
@@ -109,15 +122,16 @@ if uploaded_file is not None:
                     
                     # ワードクラウドの生成
                     wordcloud = WordCloud(
-                        background_color="white",
                         font_path=font_path,
+                        background_color="white",
                         width=800,
                         height=600,
                         regexp=r"[\w']+",
                         collocations=False,
                         min_font_size=10,
-                        max_words=100
-                    ).generate(txt)
+                        max_words=100,
+                        prefer_horizontal=0.7  # 横書きの比率を調整
+                    ).generate(" ".join(all_words))  # 単語リストを直接使用
                     
                     # プロットの作成
                     fig, ax = plt.subplots(figsize=(10, 8))
