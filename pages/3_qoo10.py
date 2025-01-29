@@ -97,3 +97,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# フッター
+st.sidebar.markdown("---")
+st.sidebar.write("バージョン: 1.0.0")
+st.sidebar.write("© 2024 まつりな") 
