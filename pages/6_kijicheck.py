@@ -1,6 +1,14 @@
 import streamlit as st
 import requests
-from bs4 import BeautifulSoup
+import os
+from dotenv import load_dotenv
+import openai
+
+# .envファイルを読み込む
+load_dotenv()
+
+# OpenAI APIキーの設定
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # ページタイトル
 st.title("URLからテキストを抽出するページ")
@@ -11,24 +19,27 @@ url = st.text_input("テキストを抽出したいURLを入力してくださ�
 if st.button("テキストを抽出"):
     if url:
         try:
-            # ユーザーエージェントを指定してURLからHTMLを取得
-            headers = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-            }
-            response = requests.get(url, headers=headers)
+            # URLからHTMLを取得
+            response = requests.get(url)
             response.raise_for_status()  # HTTPエラーが発生した場合は例外を投げる
 
-            # BeautifulSoupでHTMLを解析
-            soup = BeautifulSoup(response.text, 'html.parser')
-
-            # ページ内のすべてのテキストを抽出
-            text = soup.get_text(separator='\n', strip=True)
+            # OpenAI APIを使用してテキストを抽出
+            prompt = f"以下のURLの内容を要約してください:\n{url}\n\n内容:"
+            completion = openai.ChatCompletion.create(
+                model="gpt-4",
+                messages=[
+                    {"role": "user", "content": prompt}
+                ]
+            )
 
             # 抽出したテキストを表示
+            extracted_text = completion.choices[0].message.content
             st.subheader("抽出したテキスト:")
-            st.text_area("テキスト", text, height=300)
+            st.text_area("テキスト", extracted_text, height=300)
 
         except requests.exceptions.RequestException as e:
             st.error(f"エラーが発生しました: {str(e)}")
+        except Exception as e:
+            st.error(f"OpenAI APIエラー: {str(e)}")
     else:
         st.warning("URLを入力してください。")
