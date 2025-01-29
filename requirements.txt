@@ -8,4 +8,4 @@ mecab-python3>=1.0.6
 python-dotenv
 mecab-python3
 unidic-lite
-japanize-matplotlib
+openai>=1.0.0
