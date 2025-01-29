@@ -4,7 +4,7 @@ import pandas as pd  # pandasをインポートしてExcelやCSVを処理
 
 
 # ページタイトル
-st.title("レギュレーションチェック")
+st.title("レギュレーションチェック※準備中")
 
 # レギュレーションファイルのアップロード
 regulation_file = st.file_uploader("レギュレーションファイルをアップロードしてください（ExcelまたはCSVファイル）", type=["xlsx", "csv"])
