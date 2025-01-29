@@ -18,7 +18,16 @@ if st.button("テキストを抽出"):
     if url:
         try:
             # OpenAI APIを使用してURLの内容を要約
-            prompt = f"\n{url}\n\n内容:この記事のテキスト部分を抜き出して"
+            prompt = f"""
+            あなたはレギュレーションのNG項目にそって。以下の指示に従って記事に書かれていることでNG文章を取り出してください：
+
+            ## 必須タスク
+            記事レギュレーションに抵触するところ
+
+            ### サマリー
+            {url}
+            内容:この記事のテキスト部分を抜き出して
+            """
             completion = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",  # または "gpt-4" を使用
                 messages=[
