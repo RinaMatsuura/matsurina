@@ -24,7 +24,7 @@ if st.button("テキストを抽出"):
             response.raise_for_status()  # HTTPエラーが発生した場合は例外を投げる
 
             # OpenAI APIを使用してテキストを抽出
-            prompt = f"以下のURLの内容を要約してください:\n{url}\n\n内容:"
+            prompt = f"以下のURLのテキストを抽出してください:\n{url}\n\n内容:"
             completion = openai.ChatCompletion.create(
                 model="gpt-4",
                 messages=[
