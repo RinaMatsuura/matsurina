@@ -2,6 +2,9 @@ import streamlit as st
 import openai
 import pandas as pd  # pandasをインポートしてExcelやCSVを処理
 
+# OpenAI APIキーの設定
+openai.api_key = st.secrets["openai_api_key"]  # StreamlitのシークレットからAPIキーを取得
+
 # ページタイトル
 st.title("レギュレーションチェック")
 
