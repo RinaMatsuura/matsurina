@@ -25,9 +25,10 @@ def check_audio_format(file_path):
 
 st.title("音声文字起こし 🎤")
 
-# サイドバーで言語選択
-language = st.sidebar.selectbox(
-    "文字起こしの言語を選択",
+# ページ内で言語選択
+st.subheader("文字起こしの言語を選択")
+language = st.selectbox(
+    "言語を選択してください",
     ["日本語", "英語", "自動検出"],
     index=0
 )
@@ -63,10 +64,10 @@ if uploaded_file is not None:
             # 文字起こし結果の表示
             st.subheader("📝 文字起こし結果")
             conversation_log = ""
-            for segment in transcription["segments"]:
-                start_time = segment["start"]
-                end_time = segment["end"]
-                text = segment["text"]
+            for segment in transcription.segments:
+                start_time = segment.start
+                end_time = segment.end
+                text = segment.text
                 conversation_log += f"スピーカーA（{start_time:.1f}秒 - {end_time:.1f}秒）: {text}\n"
 
             st.write(conversation_log)
@@ -118,7 +119,7 @@ if uploaded_file is not None:
 # 使い方の説明を更新
 with st.expander("💡 使い方"):
     st.write("""
-    1. サイドバーで文字起こしの言語を選択
+    1. ページ内で文字起こしの言語を選択
     2. 音声ファイル（mp3, m4a, wav）をアップロード
     3. 自動で文字起こしが開始されます
     4. 文字起こし結果と詳細情報が表示されます
