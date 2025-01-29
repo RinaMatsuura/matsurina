@@ -1,32 +1,34 @@
 import streamlit as st
 import os
-from dotenv import load_dotenv
 import openai
 
-
-
-# OpenAI APIキーの設定
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
 # ページタイトル
-st.title("URLからテキストを抽出するページ")
+st.title("レギュレーションチェック")
+
+# レギュレーションファイルのアップロード
+regulation_file = st.file_uploader("レギュレーションファイルをアップロードしてください（テキストファイル）", type=["txt"])
 
 # URL入力フォーム
-url = st.text_input("テキストを抽出したいURLを入力してください:")
+url = st.text_input("テキストを抽出したい記事のURLを入力してください:")
 
-if st.button("テキストを抽出"):
-    if url:
+if st.button("チェック"):
+    if regulation_file and url:
         try:
-            # OpenAI APIを使用してURLの内容を要約
+            # アップロードされたレギュレーションファイルの内容を読み込む
+            regulation_text = regulation_file.read().decode("utf-8")
+
+            # OpenAI APIを使用してレギュレーションと記事を比較
             prompt = f"""
-            あなたはレギュレーションのNG項目にそって。以下の指示に従って記事に書かれていることでNG文章を取り出してください：
+            以下のレギュレーションに基づいて、指定されたURLの内容がレギュレーションに抵触するかどうかを判断してください。
 
-            ## 必須タスク
-            記事レギュレーションに抵触するところ
+            ## レギュレーション
+            {regulation_text}
 
-            ### サマリー
+            ## 記事URL
             {url}
-            内容:この記事のテキスト部分を抜き出して
+
+            ## 指示
+            記事がレギュレーションに抵触する場合は、その部分を指摘してください。
             """
             completion = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",  # または "gpt-4" を使用
@@ -36,11 +38,11 @@ if st.button("テキストを抽出"):
             )
 
             # 抽出したテキストを表示
-            extracted_text = completion.choices[0].message['content']
-            st.subheader("抽出したテキスト:")
-            st.text_area("テキスト", extracted_text, height=300)
+            result_text = completion.choices[0].message['content']
+            st.subheader("チェック結果:")
+            st.text_area("結果", result_text, height=300)
 
         except Exception as e:
             st.error(f"OpenAI APIエラー: {str(e)}")
     else:
-        st.warning("URLを入力してください。")
+        st.warning("レギュレーションファイルと記事URLの両方を入力してください。")
