@@ -96,6 +96,10 @@ if uploaded_file is not None:
                 frequency_penalty=0
             )
 
+            # トグル内に文字起こし結果を表示
+            with st.expander("🔍 文字起こし結果を表示"):
+                st.write(transcription.text)
+
             st.write(response.choices[0].message.content)
 
         except Exception as e:
