@@ -1,5 +1,4 @@
 import streamlit as st
-import os
 import openai
 import pandas as pd  # pandasをインポートしてExcelやCSVを処理
 
