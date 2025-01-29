@@ -11,10 +11,9 @@ url = st.text_input("テキストを抽出したいURLを入力してくださ�
 if st.button("テキストを抽出"):
     if url:
         try:
-            # ユーザーエージェントとリファラーを指定してURLからHTMLを取得
+            # ユーザーエージェントを指定してURLからHTMLを取得
             headers = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-                "Referer": url  # リファラーをURLに設定
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
             }
             response = requests.get(url, headers=headers)
             response.raise_for_status()  # HTTPエラーが発生した場合は例外を投げる
@@ -22,7 +21,7 @@ if st.button("テキストを抽出"):
             # BeautifulSoupでHTMLを解析
             soup = BeautifulSoup(response.text, 'html.parser')
 
-            # ページ内のテキストを抽出
+            # ページ内のすべてのテキストを抽出
             text = soup.get_text(separator='\n', strip=True)
 
             # 抽出したテキストを表示
