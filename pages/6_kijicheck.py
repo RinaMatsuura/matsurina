@@ -1,12 +1,13 @@
 import streamlit as st
 import os
 import openai
+import pandas as pd  # pandasをインポートしてExcelやCSVを処理
 
 # ページタイトル
 st.title("レギュレーションチェック")
 
 # レギュレーションファイルのアップロード
-regulation_file = st.file_uploader("レギュレーションファイルをアップロードしてください（テキストファイル）", type=["txt"])
+regulation_file = st.file_uploader("レギュレーションファイルをアップロードしてください（ExcelまたはCSVファイル）", type=["xlsx", "csv"])
 
 # URL入力フォーム
 url = st.text_input("テキストを抽出したい記事のURLを入力してください:")
@@ -15,7 +16,10 @@ if st.button("チェック"):
     if regulation_file and url:
         try:
             # アップロードされたレギュレーションファイルの内容を読み込む
-            regulation_text = regulation_file.read().decode("utf-8")
+            if regulation_file.name.endswith('.xlsx'):
+                regulation_text = pd.read_excel(regulation_file).to_string(index=False)  # Excelファイルを読み込む
+            else:
+                regulation_text = pd.read_csv(regulation_file).to_string(index=False)  # CSVファイルを読み込む
 
             # OpenAI APIを使用してレギュレーションと記事を比較
             prompt = f"""
