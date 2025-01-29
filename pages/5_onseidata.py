@@ -100,7 +100,25 @@ if uploaded_file is not None:
             with st.expander("🔍 文字起こし結果を表示"):
                 st.write(transcription.text)
 
-            st.write(response.choices[0].message.content)
+            # 会話ログの表示
+            st.subheader("🔍 会話ログ")
+            conversation_log = ""
+            for segment in transcription.segments:
+                start_time = segment.start
+                end_time = segment.end
+                text = segment.text
+
+                # スピーカーの識別（簡易的な例）
+                if "Aさん" in text or "A" in text:
+                    speaker = "スピーカーA"
+                elif "Bさん" in text or "B" in text:
+                    speaker = "スピーカーB"
+                else:
+                    speaker = "不明なスピーカー"
+
+                conversation_log += f"{speaker}（{start_time:.1f}秒 - {end_time:.1f}秒）: {text}\n\n"  # 改行を追加
+
+            st.write(conversation_log)
 
         except Exception as e:
             st.error(f"エラーが発生しました: {str(e)}")
