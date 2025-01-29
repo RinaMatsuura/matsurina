@@ -19,12 +19,15 @@ url = st.text_input("テキストを抽出したいURLを入力してくださ�
 if st.button("テキストを抽出"):
     if url:
         try:
-            # URLからHTMLを取得
-            response = requests.get(url)
+            # ユーザーエージェントを指定してURLからHTMLを取得
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+            }
+            response = requests.get(url, headers=headers)
             response.raise_for_status()  # HTTPエラーが発生した場合は例外を投げる
 
             # OpenAI APIを使用してテキストを抽出
-            prompt = f":\n{url}\n\n内容:この記事のテキスト部分抜き出して"
+            prompt = f"以下のURLの内容を要約してください:\n{url}\n\n内容:この記事のテキスト部分を抜き出して"
             completion = openai.ChatCompletion.create(
                 model="gpt-4",
                 messages=[
