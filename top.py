@@ -71,7 +71,7 @@ if check_password():
 
     # メインコンテンツ
     st.write("""
-              - このページたちは松浦が余暇で作ってるものなので、要望やエラーには本当に気まぐれにしか対応しません。ご了承ください。
+              - このページは松浦が余暇で作っているものなので、要望やエラーには本当に気まぐれにしか対応しません。ご了承ください。
               - 社内利用だけを想定して色々作っているので他社に配布しないでください。""")
 
     # 機能の説明
@@ -91,7 +91,7 @@ if check_password():
         st.write("""
         - Qoo10からレビューを取得！
         - アットコスメより取得スピードが早いよ
-        - csvでデータも取得できる
+        - CSVでデータも取得できる
         """)
         if st.button("Qoo10スクレイピングページへ", type="primary", use_container_width=True):
             st.switch_page("pages/3_qoo10.py")
@@ -101,7 +101,7 @@ if check_password():
         st.write("""
         - @cosmeからレビューを取得！
         - 評価も取得できる
-        - csvでデータも取得できる
+        - CSVでデータも取得できる
         """)
         if st.button("@cosmeスクレイピングページへ", type="primary", use_container_width=True):
             st.switch_page("pages/2_atcosme.py")
