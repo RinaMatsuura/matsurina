@@ -1,8 +1,12 @@
 import streamlit as st
+import os
+from dotenv import load_dotenv
 import openai
 
+
+
 # OpenAI APIキーの設定
-openai.api_key = st.secrets["openai_api_key"]  # StreamlitのシークレットからAPIキーを取得
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # ページタイトル
 st.title("URLからテキストを抽出するページ")
@@ -14,7 +18,7 @@ if st.button("テキストを抽出"):
     if url:
         try:
             # OpenAI APIを使用してURLの内容を要約
-            prompt = f"以下のURLの内容を要約してください:\n{url}\n\n内容:この記事のテキスト部分を抜き出して"
+            prompt = f"\n{url}\n\n内容:この記事のテキスト部分を抜き出して"
             completion = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",  # または "gpt-4" を使用
                 messages=[
