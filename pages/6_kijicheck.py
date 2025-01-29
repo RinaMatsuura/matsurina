@@ -19,7 +19,7 @@ if st.button("テキストを抽出"):
     if url:
         try:
             # OpenAI APIを使用してURLの内容を要約
-            prompt = f"以下のURLの内容を要約してください:\n{url}\n\n内容:この記事のテキスト部分を抜き出して"
+            prompt = f"\n{url}\n\n内容:この記事のテキスト部分を抜き出して"
             completion = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",  # または "gpt-4" を使用
                 messages=[
