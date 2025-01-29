@@ -62,12 +62,14 @@ if uploaded_file is not None:
 
             # 文字起こし結果の表示
             st.subheader("📝 文字起こし結果")
-            st.write(transcription.text)
+            conversation_log = ""
+            for segment in transcription["segments"]:
+                start_time = segment["start"]
+                end_time = segment["end"]
+                text = segment["text"]
+                conversation_log += f"スピーカーA（{start_time:.1f}秒 - {end_time:.1f}秒）: {text}\n"
 
-            # 詳細情報の表示
-            with st.expander("🔍 詳細情報"):
-                st.write(f"検出された言語: {transcription.language}")
-                st.write(f"処理時間: {transcription.duration:.2f}秒")
+            st.write(conversation_log)
 
             # GPT-4による要約と整理
             st.subheader("🔍 会話の分析")
@@ -75,7 +77,6 @@ if uploaded_file is not None:
                 model="gpt-4-turbo-preview",
                 messages=[
                     {"role": "system", "content": """
-                    # システム設定
                     あなたは会話文の整理と文字起こしの専門家です。以下の指示に従って会話を整理してください：
 
                     ## 必須タスク
@@ -96,7 +97,7 @@ if uploaded_file is not None:
                     - 時系列順に会話を整理
                     - 箇条書きで見やすく整形
                     """},
-                    {"role": "user", "content": f"以下のテキストをまとめてください：\n{transcription.text}"}
+                    {"role": "user", "content": f"以下のテキストをまとめてください：\n{conversation_log}"}
                 ],
                 temperature=0,
                 max_tokens=4096,
