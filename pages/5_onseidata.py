@@ -1,33 +1,73 @@
 import streamlit as st
-import os
+import tempfile
 from openai import OpenAI
+import os
+import subprocess
+
+def check_audio_format(file_path):
+    """音声ファイルの形式をチェックし、必要に応じて変換する"""
+    try:
+        # ffprobeでファイル情報を取得
+        cmd = ['ffprobe', '-i', file_path, '-show_entries', 'format=format_name', '-v', 'quiet', '-of', 'csv=p=0']
+        format_name = subprocess.check_output(cmd).decode('utf-8').strip()
+        
+        if format_name not in ['mp3', 'wav', 'm4a']:
+            # 変換が必要な場合
+            new_path = file_path + '.mp3'
+            convert_cmd = ['ffmpeg', '-i', file_path, '-acodec', 'libmp3lame', '-y', new_path]
+            subprocess.run(convert_cmd, check=True)
+            os.remove(file_path)
+            return new_path
+        return file_path
+    except Exception as e:
+        st.error(f"音声ファイルの処理中にエラーが発生しました: {str(e)}")
+        return None
 
 st.title("音声文字起こし 🎤")
 
+# サイドバーで言語選択
+language = st.sidebar.selectbox(
+    "文字起こしの言語を選択",
+    ["日本語", "英語", "自動検出"],
+    index=0
+)
+
+language_code = {
+    "日本語": "ja",
+    "英語": "en",
+    "自動検出": None
+}
+
 # ファイルアップローダーの追加
-uploaded_file = st.file_uploader("音声ファイルをアップロード", type=['mp3', 'm4a', 'wav', 'mp4'])
+uploaded_file = st.file_uploader("音声ファイルをアップロード", type=['mp3', 'm4a', 'wav'])
 
 if uploaded_file is not None:
-    # 一時ファイルとして保存
-    with st.spinner("ファイルを処理中..."):
-        temp_file_path = os.path.join("/tmp", uploaded_file.name)
-        with open(temp_file_path, "wb") as f:
-            f.write(uploaded_file.getvalue())
+    with st.spinner("文字起こしを実行中..."):
+        # 一時ファイルとして保存
+        with tempfile.NamedTemporaryFile(delete=False, suffix=f".{uploaded_file.name.split('.')[-1]}") as temp_file:
+            temp_file.write(uploaded_file.getvalue())
+            temp_file_path = temp_file.name
 
         try:
-            # OpenAI APIキーの設定
-            client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+            client = OpenAI()
 
             # Whisper APIを使用して文字起こし
             with open(temp_file_path, "rb") as audio_file:
                 transcription = client.audio.transcriptions.create(
                     model="whisper-1",
-                    file=audio_file
+                    file=audio_file,
+                    language=language_code[language],
+                    response_format="verbose_json"
                 )
 
             # 文字起こし結果の表示
             st.subheader("📝 文字起こし結果")
             st.write(transcription.text)
+
+            # 詳細情報の表示
+            with st.expander("🔍 詳細情報"):
+                st.write(f"検出された言語: {transcription.language}")
+                st.write(f"処理時間: {transcription.duration:.2f}秒")
 
             # GPT-4による要約と整理
             st.subheader("🔍 会話の分析")
@@ -67,21 +107,26 @@ if uploaded_file is not None:
 
             st.write(response.choices[0].message.content)
 
-            # 一時ファイルの削除
-            os.remove(temp_file_path)
-
         except Exception as e:
             st.error(f"エラーが発生しました: {str(e)}")
+        finally:
+            # 一時ファイルの削除
             if os.path.exists(temp_file_path):
                 os.remove(temp_file_path)
 
-# 使い方の説明
+# 使い方の説明を更新
 with st.expander("💡 使い方"):
     st.write("""
-    1. 音声ファイル（mp3, m4a, wav, mp4）をアップロード
-    2. 自動で文字起こしが開始されます
-    3. 文字起こし結果が表示されます
-    4. GPT-4による会話の分析結果が表示されます
+    1. サイドバーで文字起こしの言語を選択
+    2. 音声ファイル（mp3, m4a, wav）をアップロード
+    3. 自動で文字起こしが開始されます
+    4. 文字起こし結果と詳細情報が表示されます
+    5. GPT-4による会話の分析結果が表示されます
+    
+    注意事項：
+    - ファイルサイズの上限は25MB
+    - 対応フォーマット: MP3, M4A, WAV
+    - 音声は明瞭なものを使用することで精度が向上します
     """)
 
 # フッター
