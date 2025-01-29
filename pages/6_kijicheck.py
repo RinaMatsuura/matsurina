@@ -21,14 +21,14 @@ if st.button("テキストを抽出"):
             # OpenAI APIを使用してURLの内容を要約
             prompt = f"以下のURLの内容を要約してください:\n{url}\n\n内容:この記事のテキスト部分を抜き出して"
             completion = openai.ChatCompletion.create(
-                model="gpt-4",
+                model="gpt-3.5-turbo",
                 messages=[
                     {"role": "user", "content": prompt}
                 ]
             )
 
             # 抽出したテキストを表示
-            extracted_text = completion.choices[0].message.content
+            extracted_text = completion.choices[0].message['content']
             st.subheader("抽出したテキスト:")
             st.text_area("テキスト", extracted_text, height=300)
 
