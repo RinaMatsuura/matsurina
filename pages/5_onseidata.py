@@ -61,14 +61,23 @@ if uploaded_file is not None:
                     response_format="verbose_json"
                 )
 
-            # 文字起こし結果の表示
-            st.subheader("📝 文字起こし結果")
+            # 会話ログの表示
+            st.subheader("🔍 会話ログ")
             conversation_log = ""
             for segment in transcription.segments:
                 start_time = segment.start
                 end_time = segment.end
                 text = segment.text
-                conversation_log += f"スピーカーA（{start_time:.1f}秒 - {end_time:.1f}秒）: {text}\n"
+
+                # スピーカーの識別（簡易的な例）
+                if "Aさん" in text or "A" in text:
+                    speaker = "スピーカーA"
+                elif "Bさん" in text or "B" in text:
+                    speaker = "スピーカーB"
+                else:
+                    speaker = "不明なスピーカー"
+
+                conversation_log += f"{speaker}（{start_time:.1f}秒 - {end_time:.1f}秒）: {text}\n"
 
             st.write(conversation_log)
 
@@ -122,7 +131,7 @@ with st.expander("💡 使い方"):
     1. ページ内で文字起こしの言語を選択
     2. 音声ファイル（mp3, m4a, wav）をアップロード
     3. 自動で文字起こしが開始されます
-    4. 文字起こし結果と詳細情報が表示されます
+    4. 会話ログが表示されます
     5. GPT-4による会話の分析結果が表示されます
     
     注意事項：
