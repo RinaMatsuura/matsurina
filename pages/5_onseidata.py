@@ -1,8 +1,8 @@
 import streamlit as st
 import tempfile
-from openai import OpenAI
 import os
 import subprocess
+import openai  # OpenAIを直接インポート
 
 def check_audio_format(file_path):
     """音声ファイルの形式をチェックし、必要に応じて変換する"""
@@ -50,11 +50,9 @@ if uploaded_file is not None:
             temp_file_path = temp_file.name
 
         try:
-            client = OpenAI()
-
             # Whisper APIを使用して文字起こし
             with open(temp_file_path, "rb") as audio_file:
-                transcription = client.audio.transcriptions.create(
+                transcription = openai.Audio.transcriptions.create(  # OpenAIのAPIを使用
                     model="whisper-1",
                     file=audio_file,
                     language=language_code[language],
@@ -63,7 +61,7 @@ if uploaded_file is not None:
 
             # GPT-4による要約と整理
             st.subheader("🔍 会話の分析")
-            response = client.chat.completions.create(
+            response = openai.ChatCompletion.create(
                 model="gpt-4-turbo-preview",
                 messages=[
                     {"role": "system", "content": """
@@ -87,7 +85,7 @@ if uploaded_file is not None:
                     - 時系列順に会話を整理
                     - 箇条書きで見やすく整形
                     """},
-                    {"role": "user", "content": f"以下のテキストをまとめてください：\n{transcription.text}"}
+                    {"role": "user", "content": f"以下のテキストをまとめてください：\n{transcription['text']}"}
                 ],
                 temperature=0,
                 max_tokens=4096,
