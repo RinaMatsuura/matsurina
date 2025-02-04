@@ -69,52 +69,47 @@ if check_password():
     st.title("松浦の実験するページ🧪")
     st.header("こんにちは :sunglasses:", divider="rainbow")
 
-    # 新しいカラムを追加
-    col1, col2 = st.columns(2)  # 2つのカラムを作成
+    # 機能の説明
+    st.write("""
+        - このページは松浦が余暇で作っているものなので、要望やエラーには本当に気まぐれにしか対応しません。ご了承ください。
+        - 社内利用だけを想定して色々作っているので他社に配布しないでください。
+    """)
 
-    with col1:
-        # 機能の説明
-        st.write("""
-              - このページは松浦が余暇で作っているものなので、要望やエラーには本当に気まぐれにしか対応しません。ご了承ください。
-              - 社内利用だけを想定して色々作っているので他社に配布しないでください。
-        """)
-
-        st.subheader("🔒 ハッシュ化")
-        st.write("""
+    st.subheader("🔒 ハッシュ化")
+    st.write("""
         - CSVファイルのデータをハッシュ化します
         - SHA-256
         - ハッシュ化したデータをCSVでダウンロードできます
-        """)
-        if st.button("ハッシュ化ページへ", type="primary", use_container_width=True):
-            st.switch_page("pages/1_hashpage.py")
+    """)
+    if st.button("ハッシュ化ページへ", type="primary", use_container_width=True):
+        st.switch_page("pages/1_hashpage.py")
 
-    with col2:
-        st.subheader("🛒 Qoo10スクレイピング")
-        st.write("""
+    st.subheader("🛒 Qoo10スクレイピング")
+    st.write("""
         - Qoo10からレビューを取得！
         - アットコスメより取得スピードが早いよ
         - CSVでデータも取得できる
-        """)
-        if st.button("Qoo10スクレイピングページへ", type="primary", use_container_width=True):
-            st.switch_page("pages/3_qoo10.py")
+    """)
+    if st.button("Qoo10スクレイピングページへ", type="primary", use_container_width=True):
+        st.switch_page("pages/3_qoo10.py")
 
-        st.subheader(":memo: @cosmeスクレイピング")
-        st.write("""
+    st.subheader(":memo: @cosmeスクレイピング")
+    st.write("""
         - @cosmeからレビューを取得！
         - 評価も取得できる
         - CSVでデータも取得できる
-        """)
-        if st.button("@cosmeスクレイピングページへ", type="primary", use_container_width=True):
-            st.switch_page("pages/2_atcosme.py")
+    """)
+    if st.button("@cosmeスクレイピングページへ", type="primary", use_container_width=True):
+        st.switch_page("pages/2_atcosme.py")
 
-        st.subheader("📊 テキストマイニング")
-        st.write("""
+    st.subheader("📊 テキストマイニング")
+    st.write("""
         - 分析したいテキストをアップロード
         - 分析したい品詞を選択
         - 分析結果をダウンロードできる！
-        """)
-        if st.button("テキストマイニングページへ", type="primary", use_container_width=True):
-            st.switch_page("pages/4_textmining.py")
+    """)
+    if st.button("テキストマイニングページへ", type="primary", use_container_width=True):
+        st.switch_page("pages/4_textmining.py")
 
     # 記事チェックページの紹介を追加
     st.subheader("📝 記事チェックページ")
