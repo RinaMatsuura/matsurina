@@ -119,6 +119,10 @@ if check_password():
     - ぜひご利用ください！
     """)
 
+    # 記事チェックページへのボタンを追加
+    if st.button("記事チェックページへ", type="primary", use_container_width=True):
+        st.switch_page("pages/5_kijicheck.py")  # 記事チェックページへの遷移
+
     # フッター
     st.sidebar.markdown("---")
     st.sidebar.write("バージョン: 1.0.0")
