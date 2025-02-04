@@ -69,15 +69,16 @@ if check_password():
     st.title("松浦の実験するページ🧪")
     st.header("こんにちは :sunglasses:", divider="rainbow")
 
-    # メインコンテンツ
-    st.write("""
-              - このページは松浦が余暇で作っているものなので、要望やエラーには本当に気まぐれにしか対応しません。ご了承ください。
-              - 社内利用だけを想定して色々作っているので他社に配布しないでください。""")
-
-    # 機能の説明
-    col1, col2 = st.columns(2)
+    # 新しいカラムを追加
+    col1, col2 = st.columns(2)  # 2つのカラムを作成
 
     with col1:
+        # 機能の説明
+        st.write("""
+              - このページは松浦が余暇で作っているものなので、要望やエラーには本当に気まぐれにしか対応しません。ご了承ください。
+              - 社内利用だけを想定して色々作っているので他社に配布しないでください。
+        """)
+
         st.subheader("🔒 ハッシュ化")
         st.write("""
         - CSVファイルのデータをハッシュ化します
@@ -87,6 +88,7 @@ if check_password():
         if st.button("ハッシュ化ページへ", type="primary", use_container_width=True):
             st.switch_page("pages/1_hashpage.py")
 
+    with col2:
         st.subheader("🛒 Qoo10スクレイピング")
         st.write("""
         - Qoo10からレビューを取得！
@@ -96,7 +98,6 @@ if check_password():
         if st.button("Qoo10スクレイピングページへ", type="primary", use_container_width=True):
             st.switch_page("pages/3_qoo10.py")
 
-    with col2:
         st.subheader(":memo: @cosmeスクレイピング")
         st.write("""
         - @cosmeからレビューを取得！
@@ -114,6 +115,14 @@ if check_password():
         """)
         if st.button("テキストマイニングページへ", type="primary", use_container_width=True):
             st.switch_page("pages/4_textmining.py")
+
+    # 記事チェックページの紹介を追加
+    st.subheader("📝 記事チェックページ")
+    st.write("""
+    - 記事チェックページでは、アップロードしたレギュレーションファイルと記事のURLを比較し、記事がレギュレーションに抵触するかどうかを確認できます。
+    - 簡単にレギュレーションの遵守状況を確認できる便利な機能です。
+    - ぜひご利用ください！
+    """)
 
     # フッター
     st.sidebar.markdown("---")
