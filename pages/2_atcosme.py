@@ -92,7 +92,8 @@ if start_button:
                     # 年齢と肌タイプ情報を取得
                     age = None
                     skin_type = None
-                    reviewer_info = soup.select_one("div.reviewer-info")
+                    # reviewer-infoクラスを持つ要素を探す（divまたはp）
+                    reviewer_info = soup.select_one(".reviewer-profile .reviewer-info")
                     if reviewer_info:
                         info_text = reviewer_info.text.strip()
                         # 具体的な年齢（例：32歳）を検索
@@ -106,15 +107,13 @@ if start_button:
                                 age = age_range_match.group(0)  # "40代前半" のように保存
                         
                         # 肌タイプを検索（例：乾燥肌、混合肌、普通肌など）
-                        # スラッシュの後に続く肌タイプを検索
-                        skin_match = re.search(r'[/／]\s*([^/／\s]*?肌)(?:\s|$)', info_text)
+                        skin_match = re.search(r'[/／\s]([^\s/／]*?肌)', info_text)
                         if skin_match:
                             skin_type = skin_match.group(1)
-                        else:
-                            # 年齢情報を除外した肌タイプのパターンを検索
-                            skin_match = re.search(r'(?<!\d)([^\d\s]*?肌)(?:\s|$)', info_text)
-                            if skin_match:
-                                skin_type = skin_match.group(1)
+                        
+                        # デバッグ用（問題解決後は削除可能）
+                        st.write(f"Debug - レビュアー情報: {info_text}")
+                        st.write(f"Debug - 抽出された肌タイプ: {skin_type}")
 
                     results.append({
                         "score": score, 
