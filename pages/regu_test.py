@@ -6,7 +6,7 @@ import pandas as pd  # pandasをインポートしてExcelやCSVを処理
 REGULATION_FILE_PATH = "regulation.xlsx"  # 固定のExcelファイルのパスを指定
 
 # ページタイトル
-st.title("レギュレーションチェック")
+st.title("準備中のページ（使わないで）")
 
 # URL入力フォーム
 url = st.text_input("レギュレーションチェックしたい記事のURLを入力してください:")
