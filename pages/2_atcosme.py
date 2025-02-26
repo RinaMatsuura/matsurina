@@ -96,7 +96,6 @@ if start_button:
                     reviewer_info = soup.select_one("div.reviewer-info")
                     if reviewer_info:
                         info_text = reviewer_info.text.strip()
-                        st.write(f"Debug - 取得したテキスト: {info_text}")  # デバッグ用
                         
                         # 具体的な年齢（例：32歳）を検索
                         age_match = re.search(r'(\d+)歳', info_text)
@@ -114,10 +113,6 @@ if start_button:
                                    re.search(r'([^/／\s]*肌)(?:\s|$)', info_text)
                         if skin_match:
                             skin_type = skin_match.group(1).strip()
-                        
-                        # デバッグ情報
-                        st.write(f"Debug - 年齢: {age}")
-                        st.write(f"Debug - 肌タイプ: {skin_type}")
 
                     results.append({
                         "score": score, 
