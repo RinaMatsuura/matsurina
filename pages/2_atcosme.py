@@ -92,9 +92,9 @@ if start_button:
                     # 年齢と肌タイプ情報を取得
                     age = None
                     skin_type = None
-                    reviewer_info = soup.select_one("p.reviewer-info")
+                    reviewer_info = soup.select_one("div.reviewer-info")
                     if reviewer_info:
-                        info_text = reviewer_info.text
+                        info_text = reviewer_info.text.strip()
                         # 具体的な年齢（例：32歳）を検索
                         age_match = re.search(r'(\d+)歳', info_text)
                         if age_match:
@@ -109,7 +109,12 @@ if start_button:
                         skin_match = re.search(r'[/／]\s*([^/／\s]*肌)', info_text)
                         if skin_match:
                             skin_type = skin_match.group(1)
-                        
+                        else:
+                            # 別のパターンも試す（スラッシュなしのパターン）
+                            skin_match = re.search(r'([^\s]*肌)', info_text)
+                            if skin_match:
+                                skin_type = skin_match.group(1)
+
                     results.append({
                         "score": score, 
                         "age": age,
