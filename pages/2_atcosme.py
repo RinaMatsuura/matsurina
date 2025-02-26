@@ -89,17 +89,31 @@ if start_button:
                     else:
                         score = None
 
-                    # 年齢情報を取得
+                    # 年齢と肌タイプ情報を取得
                     age = None
+                    skin_type = None
                     reviewer_info = soup.select_one("p.reviewer-info")
                     if reviewer_info:
-                        age_match = re.search(r'(\d+)歳', reviewer_info.text)
+                        info_text = reviewer_info.text
+                        # 具体的な年齢（例：32歳）を検索
+                        age_match = re.search(r'(\d+)歳', info_text)
                         if age_match:
-                            age = int(age_match.group(1))
+                            age = age_match.group(0)  # "32歳" のように保存
+                        else:
+                            # 年代（例：40代前半）を検索
+                            age_range_match = re.search(r'(\d+代[前中後半]*)', info_text)
+                            if age_range_match:
+                                age = age_range_match.group(0)  # "40代前半" のように保存
+                        
+                        # 肌タイプを検索（例：乾燥肌、混合肌、普通肌など）
+                        skin_match = re.search(r'[/／]\s*([^/／\s]*肌)', info_text)
+                        if skin_match:
+                            skin_type = skin_match.group(1)
                         
                     results.append({
                         "score": score, 
                         "age": age,
+                        "skin_type": skin_type,
                         "comment": review_text
                     })
                     review_count += 1
