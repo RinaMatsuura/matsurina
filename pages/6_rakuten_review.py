@@ -1,8 +1,12 @@
 import streamlit as st
 import re
-import requests
-from bs4 import BeautifulSoup
 import pandas as pd
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import time
 
 st.header("楽天市場レビュースクレイピング 🔍", divider="orange")
 
@@ -52,6 +56,15 @@ if start_button:
             # 処理開始メッセージ
             st.info("🔄 スクレイピングを開始します...")
             
+            # Chromeドライバーの設定
+            chrome_options = Options()
+            chrome_options.add_argument('--headless')  # ヘッドレスモードで実行
+            chrome_options.add_argument('--no-sandbox')
+            chrome_options.add_argument('--disable-dev-shm-usage')
+            
+            driver = webdriver.Chrome(options=chrome_options)
+            wait = WebDriverWait(driver, 10)
+            
             # 指定されたページ数までループ
             for i in range(1, max_pages + 1):
                 load_url = base_url + str(i)
@@ -59,63 +72,61 @@ if start_button:
                 # URLアクセス状況を表示
                 progress_text.write(f"🌐 URL: {load_url} にアクセス中...")
                 
-                # ヘッダーを設定してブロックを回避
-                headers = {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-                }
+                driver.get(load_url)
+                time.sleep(3)  # ページの読み込みを待つ
                 
-                html = requests.get(load_url, headers=headers)
-                soup = BeautifulSoup(html.content, "html.parser")
-
-                review_count = 0
-                # レビュー要素のセレクタを修正
-                reviews = soup.select("div[class^='review-detail--']")  # 新しいクラス名に変更
-                
-                # レビューが見つからない場合はループを終了
-                if not reviews:
+                # レビュー要素が表示されるまで待機
+                try:
+                    wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "div[class*='review-detail']")))
+                except:
                     st.warning(f"⚠️ ページ {i} にレビューが見つかりませんでした。ここまでのデータを処理します。")
                     break
                 
+                # レビューを取得
+                reviews = driver.find_elements(By.CSS_SELECTOR, "div[class*='review-detail']")
+                review_count = 0
+                
                 for review in reviews:
                     # レビュー本文を取得
-                    review_text = review.select_one("div[class^='review-body--']")  # 新しいクラス名に変更
-                    if review_text:
-                        review_text = review_text.get_text().strip()
-                    else:
+                    try:
+                        review_text = review.find_element(By.CSS_SELECTOR, "div[class*='review-body']").text.strip()
+                    except:
                         continue
                     
                     # 評価を取得
                     score = None
-                    score_element = review.select_one("div[class^='review-rating--'] span")  # 新しいクラス名に変更
-                    if score_element:
-                        score_text = score_element.get_text().strip()
+                    try:
+                        score_element = review.find_element(By.CSS_SELECTOR, "div[class*='review-rating'] span")
+                        score_text = score_element.text.strip()
                         score_match = re.search(r'(\d+)', score_text)
                         if score_match:
                             score = int(score_match.group(1))
+                    except:
+                        pass
                     
                     # レビュアー情報を取得
-                    reviewer_info = review.select_one("div[class^='reviewer-info--']")  # 新しいクラス名に変更
-                    
-                    # 年齢を取得
                     age = None
-                    if reviewer_info:
-                        info_text = reviewer_info.get_text()
+                    gender = None
+                    try:
+                        reviewer_info = review.find_element(By.CSS_SELECTOR, "div[class*='reviewer-info']")
+                        info_text = reviewer_info.text
+                        
+                        # 年齢を取得
                         age_match = re.search(r'(\d+)代', info_text)
                         if age_match:
                             age = f"{age_match.group(1)}代"
-                            # 前半/後半の情報を取得
                             if "前半" in info_text:
                                 age += "前半"
                             elif "後半" in info_text:
                                 age += "後半"
-                    
-                    # 性別を取得
-                    gender = None
-                    if reviewer_info:
+                        
+                        # 性別を取得
                         if "女性" in info_text:
                             gender = "女性"
                         elif "男性" in info_text:
                             gender = "男性"
+                    except:
+                        pass
                     
                     results.append({
                         "score": score,
@@ -124,13 +135,16 @@ if start_button:
                         "comment": review_text
                     })
                     review_count += 1
-                    
+                
                 # 進捗状況を更新
                 progress = int((i / max_pages) * 100)
                 progress_bar.progress(progress)
                 progress_text.write(f"✅ ページ {i}/{max_pages} の処理が完了 (進捗: {progress}%)")
                 st.write(f"📝 {review_count}件のレビューを取得しました")
-                
+            
+            # ブラウザを閉じる
+            driver.quit()
+
             # データフレーム作成と表示
             df = pd.DataFrame(results)
             st.success("🎉 データの取得が完了しました！")
