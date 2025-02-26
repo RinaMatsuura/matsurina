@@ -109,9 +109,11 @@ if start_button:
                                 age = age_range_match.group(0)  # "40代前半" のように保存
                         
                         # 肌タイプを検索（例：乾燥肌、混合肌、普通肌など）
-                        skin_match = re.search(r'([^\s]*?肌)\s*(?:[/／]|$)', info_text)
+                        skin_match = re.search(r'[/／]\s*([^/／\n]*肌)', info_text) or \
+                                   re.search(r'[\s/／]([^/／\s]*肌)', info_text) or \
+                                   re.search(r'([^/／\s]*肌)(?:\s|$)', info_text)
                         if skin_match:
-                            skin_type = skin_match.group(1)
+                            skin_type = skin_match.group(1).strip()
                         
                         # デバッグ情報
                         st.write(f"Debug - 年齢: {age}")
