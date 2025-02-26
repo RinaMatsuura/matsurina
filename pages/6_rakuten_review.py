@@ -68,7 +68,8 @@ if start_button:
                 soup = BeautifulSoup(html.content, "html.parser")
 
                 review_count = 0
-                reviews = soup.select("div[id^='review_']")  # レビュー要素を取得
+                # レビュー要素のセレクタを修正
+                reviews = soup.select("div.revRvwBox")  # div[id^='review_'] から変更
                 
                 # レビューが見つからない場合はループを終了
                 if not reviews:
@@ -77,7 +78,7 @@ if start_button:
                 
                 for review in reviews:
                     # レビュー本文を取得
-                    review_text = review.select_one("dd.revRvwTxt")
+                    review_text = review.select_one("p.revRvwTxt")  # dd.revRvwTxt から変更
                     if review_text:
                         review_text = review_text.get_text().strip()
                     else:
@@ -85,14 +86,16 @@ if start_button:
                     
                     # 評価を取得
                     score = None
-                    score_element = review.select_one("span[class^='revRating']")
+                    score_element = review.select_one("span.revRvwStar")  # span[class^='revRating'] から変更
                     if score_element:
-                        score_class = score_element.get('class')[0]
-                        score = int(score_class[-1])  # クラス名の最後の数字が評価
+                        score_text = score_element.get_text().strip()
+                        score_match = re.search(r'(\d+)', score_text)
+                        if score_match:
+                            score = int(score_match.group(1))
                     
                     # 年齢を取得
                     age = None
-                    reviewer_info = review.select_one("p.revUserInfo")
+                    reviewer_info = review.select_one("div.revUserInfo")  # p.revUserInfo から変更
                     if reviewer_info:
                         info_text = reviewer_info.get_text()
                         age_match = re.search(r'(\d+)代', info_text)
