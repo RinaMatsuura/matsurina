@@ -69,7 +69,7 @@ if start_button:
 
                 review_count = 0
                 # レビュー要素のセレクタを修正
-                reviews = soup.select("div.revRvwBox")  # div[id^='review_'] から変更
+                reviews = soup.select("div[class^='review-detail--']")  # 新しいクラス名に変更
                 
                 # レビューが見つからない場合はループを終了
                 if not reviews:
@@ -78,7 +78,7 @@ if start_button:
                 
                 for review in reviews:
                     # レビュー本文を取得
-                    review_text = review.select_one("p.revRvwTxt")  # dd.revRvwTxt から変更
+                    review_text = review.select_one("div[class^='review-body--']")  # 新しいクラス名に変更
                     if review_text:
                         review_text = review_text.get_text().strip()
                     else:
@@ -86,16 +86,18 @@ if start_button:
                     
                     # 評価を取得
                     score = None
-                    score_element = review.select_one("span.revRvwStar")  # span[class^='revRating'] から変更
+                    score_element = review.select_one("div[class^='review-rating--'] span")  # 新しいクラス名に変更
                     if score_element:
                         score_text = score_element.get_text().strip()
                         score_match = re.search(r'(\d+)', score_text)
                         if score_match:
                             score = int(score_match.group(1))
                     
+                    # レビュアー情報を取得
+                    reviewer_info = review.select_one("div[class^='reviewer-info--']")  # 新しいクラス名に変更
+                    
                     # 年齢を取得
                     age = None
-                    reviewer_info = review.select_one("div.revUserInfo")  # p.revUserInfo から変更
                     if reviewer_info:
                         info_text = reviewer_info.get_text()
                         age_match = re.search(r'(\d+)代', info_text)
