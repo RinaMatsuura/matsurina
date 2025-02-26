@@ -106,12 +106,13 @@ if start_button:
                                 age = age_range_match.group(0)  # "40代前半" のように保存
                         
                         # 肌タイプを検索（例：乾燥肌、混合肌、普通肌など）
-                        skin_match = re.search(r'[/／]\s*([^/／\s]*肌)', info_text)
+                        # スラッシュの後に続く肌タイプを検索
+                        skin_match = re.search(r'[/／]\s*([^/／\s]*?肌)(?:\s|$)', info_text)
                         if skin_match:
                             skin_type = skin_match.group(1)
                         else:
-                            # 別のパターンも試す（スラッシュなしのパターン）
-                            skin_match = re.search(r'([^\s]*肌)', info_text)
+                            # 年齢情報を除外した肌タイプのパターンを検索
+                            skin_match = re.search(r'(?<!\d)([^\d\s]*?肌)(?:\s|$)', info_text)
                             if skin_match:
                                 skin_type = skin_match.group(1)
 
