@@ -88,8 +88,20 @@ if start_button:
                             score = None
                     else:
                         score = None
+
+                    # 年齢情報を取得
+                    age = None
+                    reviewer_info = soup.select_one("p.reviewer-info")
+                    if reviewer_info:
+                        age_match = re.search(r'(\d+)歳', reviewer_info.text)
+                        if age_match:
+                            age = int(age_match.group(1))
                         
-                    results.append({"score": score, "comment": review_text})
+                    results.append({
+                        "score": score, 
+                        "age": age,
+                        "comment": review_text
+                    })
                     review_count += 1
                     
                 # 進捗状況を更新
