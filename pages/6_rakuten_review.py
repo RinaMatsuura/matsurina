@@ -8,7 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 
-st.header("楽天市場レビュースクレイピング 🔍", divider="orange")
+st.header("楽天市場レビュースクレイピング 🔍※準備中", divider="orange")
 
 # 商品ID入力フォーム
 default_id = "354955_10000308"
