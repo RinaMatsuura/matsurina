@@ -59,7 +59,7 @@ def main():
     st.title("Qoo10レビュー取得")
     
     # URLの入力
-    url = st.text_input("Qoo10の商品URLを入力してください。入力形式は"https://www.qoo10.jp/g/商品番号/"という形式でお願いします", "https://www.qoo10.jp/g/1018510911/")
+    url = st.text_input("Qoo10の商品URLを入力してください。入力形式は末尾に商品番号がつく形でお願いします！", "https://www.qoo10.jp/g/1018510911/")
     
     # ページ数の選択
     page_option = st.radio(
